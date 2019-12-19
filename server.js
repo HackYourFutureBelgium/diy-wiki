@@ -4,25 +4,38 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const util = require('util');
 const fs = require('fs').promises;
-
+const dotenv = require('dotenv').config();
 const app = express();
 app.use(cors());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+  );
+  if (req.method === 'OPTIONS') {
+    res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
+    return res.status(200).json({});
+  }
+  next();
+});
+// app.use(express.static(filePath));
 // Uncomment this out once you've made your first route.
-// app.use(express.static(path.join(__dirname, 'client', 'build')));
-
+app.use(express.static(path.join(__dirname, 'client', 'build')));
 // some helper functions you can use
 async function readFile(filePath) {
   return await fs.readFile(filePath, 'utf-8');
 }
-async function writeFile(filePath) {
-  return await fs.writeFile(filePath, 'utf-8');
+async function writeFile(filePath, data) {
+  return await fs.writeFile(filePath, data, 'utf-8');
 }
 async function readDir(dirPath) {
-  return await fs.readDir(dirPath);
+  return await fs.readdir(dirPath);
 }
-
+pages = ['home', 'about'];
 // some more helper functions
 const DATA_DIR = 'data';
 const TAG_RE = /#\w+/g;
@@ -37,39 +50,65 @@ function jsonError(res, message) {
   res.json({ status: 'error', message });
 }
 
-app.get('/', (req, res) => {
-  res.json({ wow: 'it works!' });
+app.get('/api/page/:slug', async (req, res) => {
+  const filename = `${req.params.slug}`;
+  // const filename = req.params.slug + '.md';
+  const fullFilename = path.join(DATA_DIR, filename);
+  // const fullFilename = slugToPath(req.params.slug);
+  try {
+    const text = await readFile(fullFilename);
+    // res.json({ slug: req.params.slug, fullFilename, text });
+    res.json({ status: 'ok', body: text });
+  } catch {
+    res.json({ status: 'error', message: 'Page does not exist.' });
+  }
 });
 
-// If you want to see the wiki client, run npm install && npm build in the client folder,
-// then comment the line above and uncomment out the lines below and comment the line above.
-// app.get('*', (req, res) => {
-//   res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
-// });
+app.post('/api/page/:slug', async (req, res) => {
+  const pages = {
+    page: req.body.page,
+    text: req.body.text
+  };
+  pages.page = req.params.slug;
+  pages.text = req.body.body;
+  const filename = `${pages.page}`;
+  const fullFilename = path.join(DATA_DIR, filename);
+  const text = await writeFile(fullFilename, pages.text);
+  jsonOK(res, text);
+});
 
-// GET: '/api/page/:slug'
-// success response: {status: 'ok', body: '<file contents>'}
-// failure response: {status: 'error', message: 'Page does not exist.'}
-
-// POST: '/api/page/:slug'
-// body: {body: '<file text content>'}
-// success response: {status: 'ok'}
-// failure response: {status: 'error', message: 'Could not write page.'}
-
-// GET: '/api/pages/all'
-// success response: {status:'ok', pages: ['fileName', 'otherFileName']}
-//  file names do not have .md, just the name!
-// failure response: no failure response
+app.get('/api/pages/all', async (req, res) => {
+  process.argv[2] = 'C:/Users/strik/OneDrive/Desktop/HYF/diy-wiki/data';
+  const path = process.argv[2];
+  const page = await readDir(path);
+  res.json({ status: 'ok', pages: page });
+});
 
 // GET: '/api/tags/all'
 // success response: {status:'ok', tags: ['tagName', 'otherTagName']}
 //  tags are any word in all documents with a # in front of it
 // failure response: no failure response
-
+app.get('/api/tags/all', async(req, res) => {
+  process.argv[2] = 'C:/Users/strik/OneDrive/Desktop/HYF/diy-wiki/data'
+  const path = process.argv[2];
+  const page = await readDir(path);
+  res.json({ status: 'ok', tags: page });
+});
 // GET: '/api/tags/:tag'
 // success response: {status:'ok', tag: 'tagName', pages: ['tagName', 'otherTagName']}
 //  file names do not have .md, just the name!
 // failure response: no failure response
+// If you want to see the wiki client, run npm install && npm build in the client folder,
+// then comment the line above and uncomment out the lines below and comment the line above.
+app.get('/api/tags/:tag',async (req, res) => {
+  process.argv[2] = 'C:/Users/strik/OneDrive/Desktop/HYF/diy-wiki/data'
+  const path = process.argv[2];
+  const page = await readDir(path);
+  res.json({ status: 'ok', tag: 'tagName', pages: page });
+});
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
+});
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`Wiki app is serving at http://localhost:${port}`));
