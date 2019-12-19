@@ -2,12 +2,14 @@
   "name": "wiki-server",
   "version": "1.0.0",
   "engines": {
-    "node": "v13.3.0"
+    "node": "v13.3.0",
+    "npm": "6.13.1"
   },
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
-    "heroku-postbuild": "cd client && yarn && yarn run build"
+    "heroku-postbuild": "ng build --prod",
+    "build": "webpack"
   },
   "license": "MIT",
   "dependencies": {
@@ -15,7 +17,9 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "morgan": "^1.9.1"
+    "morgan": "^1.9.1",
+    "nodemon": "2.0.2",
+    "node": "v13.3.0"
   },
   "devDependencies": {
     "nodemon": "2.0.2",
