@@ -78,7 +78,7 @@ app.post('/api/page/:slug', async (req, res) => {
 });
 
 app.get('/api/pages/all', async (req, res) => {
-  process.argv[2] = 'C:/Users/strik/OneDrive/Desktop/HYF/diy-wiki/data';
+  process.argv[2] = DATA_DIR;
   const path = process.argv[2];
   const page = await readDir(path);
   res.json({ status: 'ok', pages: page });
