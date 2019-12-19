@@ -84,7 +84,7 @@ app.get('/api/pages/all', async (req, res) => {
   res.json({ status: 'ok', pages: page });
 });
 
-// GET: '/api/tags/all'
+// GET: '/api/tags/alla'
 // success response: {status:'ok', tags: ['tagName', 'otherTagName']}
 //  tags are any word in all documents with a # in front of it
 // failure response: no failure response
