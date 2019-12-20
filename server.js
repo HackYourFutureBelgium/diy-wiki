@@ -87,7 +87,8 @@ app.get('/api/pages/all', async (req, res) => {
 // failure response: no failure response
 app.get('/api/tags/all', async(req, res) => {
   const page = await readDir(DATA_DIR);
-  res.json({ status: 'ok', tags: page });
+
+  res.json({ status: 'ok', tags:page,});
 });
 // GET: '/api/tags/:tag'
 // success response: {status:'ok', tag: 'tagName', pages: ['tagName', 'otherTagName']}
@@ -96,8 +97,12 @@ app.get('/api/tags/all', async(req, res) => {
 // If you want to see the wiki client, run npm install && npm build in the client folder,
 // then comment the line above and uncomment out the lines below and comment the line above.
 app.get('/api/tags/:tag',async (req, res) => {
-  const page = await readDir(DATA_DIR);
-  res.json({ status: 'ok', tag: 'tagName', pages: page });
+const fileName = req.params.tag;
+if (fileName === "default"){
+  res.json({ status: 'ok', tag: [fileName], pages:['home','about'] });
+}else{
+  res.json({ status: 'ok', tag: [fileName], pages:[fileName]});
+} 
 });
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
