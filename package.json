@@ -1,6 +1,9 @@
 {
   "name": "wiki-server",
   "version": "1.0.0",
+  "engines": {
+    "node": "v13.3.0"
+  },
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
