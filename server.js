@@ -21,7 +21,7 @@ app.use((req, res, next) => {
   }
   next();
 });
-// app.use(express.static(filePath));
+//`) app.use(express.static(filePath));
 // Uncomment this out once you've made your first route.
 app.use(express.static(path.join(__dirname, 'client', 'build')));
 // some helper functions you can use
