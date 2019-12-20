@@ -4,7 +4,6 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const util = require('util');
 const fs = require('fs').promises;
-const dotenv = require('dotenv').config();
 const app = express();
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -78,9 +77,7 @@ app.post('/api/page/:slug', async (req, res) => {
 });
 
 app.get('/api/pages/all', async (req, res) => {
-  process.argv[2] = DATA_DIR;
-  const path = process.argv[2];
-  const page = await readDir(path);
+  const page = await readDir(DATA_DIR);
   res.json({ status: 'ok', pages: page });
 });
 
@@ -89,9 +86,7 @@ app.get('/api/pages/all', async (req, res) => {
 //  tags are any word in all documents with a # in front of it
 // failure response: no failure response
 app.get('/api/tags/all', async(req, res) => {
-  process.argv[2] = 'C:/Users/strik/OneDrive/Desktop/HYF/diy-wiki/data'
-  const path = process.argv[2];
-  const page = await readDir(path);
+  const page = await readDir(DATA_DIR);
   res.json({ status: 'ok', tags: page });
 });
 // GET: '/api/tags/:tag'
@@ -101,9 +96,7 @@ app.get('/api/tags/all', async(req, res) => {
 // If you want to see the wiki client, run npm install && npm build in the client folder,
 // then comment the line above and uncomment out the lines below and comment the line above.
 app.get('/api/tags/:tag',async (req, res) => {
-  process.argv[2] = 'C:/Users/strik/OneDrive/Desktop/HYF/diy-wiki/data'
-  const path = process.argv[2];
-  const page = await readDir(path);
+  const page = await readDir(DATA_DIR);
   res.json({ status: 'ok', tag: 'tagName', pages: page });
 });
 app.get('*', (req, res) => {
